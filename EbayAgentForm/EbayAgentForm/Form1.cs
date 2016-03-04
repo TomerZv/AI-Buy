@@ -61,7 +61,12 @@ namespace EbayAgentForm
         {
             // Create request object
             FindItemsAdvancedRequest request = new FindItemsAdvancedRequest();
-
+            
+            ItemFilter auctionFilter = new ItemFilter();
+            auctionFilter.name = ItemFilterType.ListingType;
+            auctionFilter.value = new string[] { "Auction", "AuctionWithBIN" };
+            request.itemFilter = new ItemFilter[] { auctionFilter };
+            
             // Set request parameters
             request.keywords = textBox1.Text;
 
