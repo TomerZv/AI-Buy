@@ -19,6 +19,7 @@ using eBay.Service.Util;
 using eBay.Service.Call;
 using Slf;
 using eBay.Services;
+using System.Xml;
 
 
 namespace EbayAgentForm
@@ -88,7 +89,9 @@ namespace EbayAgentForm
 
                 foreach (SearchItem item in items)
                 {
-                    textBox2.Text += item.title + Environment.NewLine;
+                    TimeSpan ts = XmlConvert.ToTimeSpan(item.sellingStatus.timeLeft);
+                    string newFormat = ts.ToString("d'd 'h'h 'm'm 's's'");
+                    textBox2.Text += item.title + " - " + item.sellingStatus.bidCount + " offers - " + item.sellingStatus.currentPrice.Value + " " + item.sellingStatus.currentPrice.currencyId + ", time left - " + newFormat + Environment.NewLine;
                 }
             }
 
