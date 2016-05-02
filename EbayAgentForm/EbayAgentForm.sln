@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eBay.Services", "eBay.Servi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionManager", "AuctionManager\AuctionManager.csproj", "{6102585C-CDC0-4AA1-8EA9-68CAE355FA69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaiveAgent", "NaiveAgent\NaiveAgent.csproj", "{6CAD0102-ED04-476E-B8E6-9552265CEEB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6102585C-CDC0-4AA1-8EA9-68CAE355FA69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6102585C-CDC0-4AA1-8EA9-68CAE355FA69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6102585C-CDC0-4AA1-8EA9-68CAE355FA69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CAD0102-ED04-476E-B8E6-9552265CEEB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CAD0102-ED04-476E-B8E6-9552265CEEB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CAD0102-ED04-476E-B8E6-9552265CEEB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CAD0102-ED04-476E-B8E6-9552265CEEB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

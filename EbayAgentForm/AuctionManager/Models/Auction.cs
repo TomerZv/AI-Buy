@@ -15,6 +15,7 @@ namespace AuctionManager.Models
         [DataType(DataType.DateTime)]
         public DateTime EndDate { get; set; }
         public int MinimumPrice { get; set; }
+        public int CurrentPrice { get; set; }
         public string Name { get; set; }
         public List<Bid> Biddings { get; set; }
 
