@@ -12,17 +12,18 @@ namespace AuctionManager.Controllers
     public class ManageAuctionsController : ApiController
     {
         [HttpPost()]
-        public BidResult PlaceBidOnAuction(Bid bid)
+        public BidResult PlaceBidOnAuction([FromBody] Bid bid)
         {
             return BusinessLogic.Instance.PlaceBidOnAuction(bid);
         }
 
         [HttpGet()]
-        public Auction GetAuction(int auctionId)
+        public Auction GetAuction(int id)
         {
-            return BusinessLogic.Instance.GetAuction(auctionId);
+            return BusinessLogic.Instance.GetAuction(id);
         }
 
+        [HttpGet()]
         public void ReadAuctions()
         {
             BusinessLogic.Instance.ReadAuctions();

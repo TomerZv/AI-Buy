@@ -49,6 +49,12 @@ namespace AuctionManager.Classes
         public BidResult PlaceBidOnAuction(Bid bid)
         {
             BidResult result = new BidResult();
+
+            if (Auctions[bid.AuctionID] == null)
+            {
+                result.DidSucceed = false;
+                return result;
+            }
             Object locker = Auctions[bid.AuctionID].Item2;
 
             bool didEnter = true;
