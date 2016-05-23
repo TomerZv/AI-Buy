@@ -40,6 +40,7 @@ namespace FormAgent
             row.Cells[0].Value = "Agent4";
             row.Cells[1].Value = "580 $";
             row.Cells[2].Value = DateTime.Now;
+            row.DefaultCellStyle.BackColor = Color.Green;
             dataGridView1.Rows.Insert(0, row);
 
             textBox7.Text = "580 $";
