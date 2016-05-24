@@ -1,7 +1,9 @@
 ﻿using AuctionManager.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Web;
 
@@ -38,8 +40,45 @@ namespace AuctionManager.Classes
 
         public void ReadAuctions()
         {
+            Auctions.Clear();
 
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create("~/Content/AITrainingData.csv");
+            HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+
+            using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
+            {
+                while (!sr.EndOfStream)
+                {
+                    var line = sr.ReadLine();
+                    var values = line.Split(',');
+
+                    Auction auc = new Auction();
+                    auc.ID = int.Parse(values[0]);
+                    auc.Name = values[1];
+                    auc.StartDate = DateTime.Parse(values[2]);
+                    auc.EndDate = DateTime.Parse(values[3]);
+                    auc.MinimumPrice = int.Parse(values[4]);
+                    auc.Biddings = new List<Bid>();
+                    auc.CurrentPrice = 0;
+
+                    Auctions.Add(auc.ID, new Tuple<Auction, object>(auc, new Object()));       
+                }
+            }
         }
+
+        public List<Auction> GetAllAuction()
+        {
+            List<Auction> allAuctions = new List<Auction>();
+
+            foreach(Tuple<Auction, Object> item in Auctions.Values)
+            {
+
+                allAuctions.Add(item.Item1);
+            }
+
+            return allAuctions;
+        }
+
 
         public Auction GetAuction(int auctionId)
         {

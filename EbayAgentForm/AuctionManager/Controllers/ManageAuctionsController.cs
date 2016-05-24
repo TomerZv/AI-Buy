@@ -24,6 +24,12 @@ namespace AuctionManager.Controllers
         }
 
         [HttpGet()]
+        public List<Auction> GetAuctions()
+        {
+            return BusinessLogic.Instance.GetAllAuction();
+        }
+
+        [HttpGet()]
         public void ReadAuctions()
         {
             BusinessLogic.Instance.ReadAuctions();
