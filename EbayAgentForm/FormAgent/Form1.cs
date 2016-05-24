@@ -40,7 +40,7 @@ namespace FormAgent
             row.Cells[0].Value = "Agent4";
             row.Cells[1].Value = "580 $";
             row.Cells[2].Value = DateTime.Now;
-            row.DefaultCellStyle.BackColor = Color.Green;
+            row.DefaultCellStyle.BackColor = Color.LightGreen;
             dataGridView1.Rows.Insert(0, row);
 
             textBox7.Text = "580 $";
@@ -57,7 +57,7 @@ namespace FormAgent
             HttpResponseMessage x = await httpClient.PostAsync(resourceAddress, new StringContent(postBody, Encoding.UTF8, "application/json"));
 
             MessageBox.Show(x.IsSuccessStatusCode.ToString());*/
-            Thread.Sleep(1200);
+            Thread.Sleep(1700);
 
             timer1.Tick += timer1_Tick;
             timer1.Interval = 1000;
@@ -117,7 +117,7 @@ namespace FormAgent
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Thread.Sleep(1500);
+            Thread.Sleep(2200);
             listBox1.Items.Add("Apple iPhone 6S 64GB (2 Auction found)");
             listBox1.Items.Add("Apple iPhone 5S 32GB (4 Auction found)");
             listBox1.Items.Add("Apple iPhone 6 16 (1 Auction found)");            
