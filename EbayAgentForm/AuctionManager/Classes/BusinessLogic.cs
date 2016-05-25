@@ -38,6 +38,12 @@ namespace AuctionManager.Classes
 
         #endregion
 
+        private BusinessLogic()
+        {
+            this.Auctions = new Dictionary<int, Tuple<Auction, object>>();
+        }
+
+
         public void ReadAuctions()
         {
             Auctions.Clear();
@@ -89,7 +95,7 @@ namespace AuctionManager.Classes
         {
             BidResult result = new BidResult();
 
-            if (Auctions[bid.AuctionID] == null)
+            if (!Auctions.ContainsKey(bid.AuctionID))
             {
                 result.DidSucceed = false;
                 return result;
