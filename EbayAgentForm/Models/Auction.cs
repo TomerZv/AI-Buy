@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace AuctionManager.Models
+namespace Models
 {
     public class Auction
     {
@@ -22,7 +22,7 @@ namespace AuctionManager.Models
 
         public AuctionStatus Status { get; set; }
     }
-    
+
     public enum AuctionStatus
     {
         Future,

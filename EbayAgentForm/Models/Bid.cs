@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace AuctionManager.Models
+namespace Models
 {
-    public class Bid 
+    public class Bid
     {
         [Key]
         public int ID { get; set; }

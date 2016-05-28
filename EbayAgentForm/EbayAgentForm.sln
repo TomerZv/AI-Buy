@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EbayAgentForm", "EbayAgentForm\EbayAgentForm.csproj", "{8933F267-1F28-4885-B31A-041F1239C5DF}"
 EndProject
@@ -9,9 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eBay.Services", "eBay.Servi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuctionManager", "AuctionManager\AuctionManager.csproj", "{6102585C-CDC0-4AA1-8EA9-68CAE355FA69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaiveAgent", "NaiveAgent\NaiveAgent.csproj", "{6CAD0102-ED04-476E-B8E6-9552265CEEB1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormAgent", "FormAgent\FormAgent.csproj", "{2911A9F2-CB2B-4CD1-95A7-713051AE456E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicAgentForm", "BasicAgentForm\BasicAgentForm.csproj", "{8D443B75-A792-44CB-BB3C-9A9D64837DE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{192A03D8-FC85-4D24-A608-59A404B69706}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +33,18 @@ Global
 		{6102585C-CDC0-4AA1-8EA9-68CAE355FA69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6102585C-CDC0-4AA1-8EA9-68CAE355FA69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6102585C-CDC0-4AA1-8EA9-68CAE355FA69}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CAD0102-ED04-476E-B8E6-9552265CEEB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CAD0102-ED04-476E-B8E6-9552265CEEB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CAD0102-ED04-476E-B8E6-9552265CEEB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CAD0102-ED04-476E-B8E6-9552265CEEB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2911A9F2-CB2B-4CD1-95A7-713051AE456E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2911A9F2-CB2B-4CD1-95A7-713051AE456E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2911A9F2-CB2B-4CD1-95A7-713051AE456E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2911A9F2-CB2B-4CD1-95A7-713051AE456E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D443B75-A792-44CB-BB3C-9A9D64837DE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D443B75-A792-44CB-BB3C-9A9D64837DE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D443B75-A792-44CB-BB3C-9A9D64837DE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D443B75-A792-44CB-BB3C-9A9D64837DE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{192A03D8-FC85-4D24-A608-59A404B69706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{192A03D8-FC85-4D24-A608-59A404B69706}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{192A03D8-FC85-4D24-A608-59A404B69706}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{192A03D8-FC85-4D24-A608-59A404B69706}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
