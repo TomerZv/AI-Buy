@@ -9,14 +9,15 @@ namespace AuctionManager.Models
     public class Auction
     {
         [Key]
-        public int ID { get; set; }
-        [DataType(DataType.DateTime)]
-        public DateTime StartDate { get; set; }
-        [DataType(DataType.DateTime)]
-        public DateTime EndDate { get; set; }
+        public int Id { get; set; }
+        public string ItemType { get; set; }
+        public int StartDate { get; set; }
+        public int Duration { get; set; }
         public int MinimumPrice { get; set; }
+        public int AvgPrice { get; set; }
+        public int MinBid { get; set; }
         public int CurrentPrice { get; set; }
-        public string Name { get; set; }
+
         public List<Bid> Biddings { get; set; }
 
         public AuctionStatus Status { get; set; }

@@ -23,14 +23,32 @@ namespace AuctionManager.Controllers
             return BusinessLogic.Instance.GetAuction(id);
         }
 
+        [Route("api/ManageAuctions/IsStarted")]
+        [HttpGet()]
+        public bool IsStarted()
+        {
+            return BusinessLogic.Instance.IsStarted();
+        }
+
+        [Route("api/ManageAuctions/InitAuctions")]
+        [HttpGet()]
+        public string InitAuctions()
+        {
+            BusinessLogic.Instance.InitAuctions();
+
+            return "success";
+        }
+
+        [Route("api/ManageAuctions/GetAuctions")]
         [HttpGet()]
         public List<Auction> GetAuctions()
         {
             return BusinessLogic.Instance.GetAllAuction();
         }
 
+        [Route("api/ManageAuctions/GetAuctionsFromFile")]
         [HttpGet()]
-        public void ReadAuctions()
+        public void GetAuctionsFromFile()
         {
             BusinessLogic.Instance.ReadAuctions();
         }

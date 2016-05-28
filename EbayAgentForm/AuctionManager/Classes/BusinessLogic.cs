@@ -14,6 +14,7 @@ namespace AuctionManager.Classes
         #region Singleton
         private static volatile BusinessLogic instance;
         private static object syncRoot = new Object();
+
         public static BusinessLogic Instance
         {
             get
@@ -34,40 +35,51 @@ namespace AuctionManager.Classes
 
         #region Data Members
 
-        public Dictionary<int, Tuple<Auction, Object>> Auctions { get; set; }
+        private static Dictionary<int, Tuple<Auction, Object>> Auctions { get; set; }
+
+        private static bool IsAuctionsStarted { get; set; }
 
         #endregion
 
         private BusinessLogic()
         {
-            this.Auctions = new Dictionary<int, Tuple<Auction, object>>();
+            Auctions = new Dictionary<int, Tuple<Auction, object>>();
+            IsAuctionsStarted = false;
         }
 
+        public bool IsStarted()
+        {
+            return IsAuctionsStarted;
+        }
 
         public void ReadAuctions()
         {
             Auctions.Clear();
 
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create("~/Content/AITrainingData.csv");
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create("http://localhost:8670/Content/AITrainingData.csv");
             HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
 
             using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
             {
+                sr.ReadLine();
+
                 while (!sr.EndOfStream)
                 {
                     var line = sr.ReadLine();
                     var values = line.Split(',');
 
                     Auction auc = new Auction();
-                    auc.ID = int.Parse(values[0]);
-                    auc.Name = values[1];
-                    auc.StartDate = DateTime.Parse(values[2]);
-                    auc.EndDate = DateTime.Parse(values[3]);
+                    auc.Id = int.Parse(values[0]);
+                    auc.ItemType = values[1];
+                    auc.StartDate = int.Parse(values[2]);
+                    auc.Duration = int.Parse(values[3]);
                     auc.MinimumPrice = int.Parse(values[4]);
+                    auc.AvgPrice = int.Parse(values[5]);
+                    auc.MinBid = int.Parse(values[6]);
                     auc.Biddings = new List<Bid>();
                     auc.CurrentPrice = 0;
 
-                    Auctions.Add(auc.ID, new Tuple<Auction, object>(auc, new Object()));       
+                    Auctions.Add(auc.Id, new Tuple<Auction, object>(auc, new Object()));       
                 }
             }
         }
@@ -85,6 +97,10 @@ namespace AuctionManager.Classes
             return allAuctions;
         }
 
+        public void InitAuctions()
+        {
+            IsAuctionsStarted = true;
+        }
 
         public Auction GetAuction(int auctionId)
         {
@@ -131,5 +147,6 @@ namespace AuctionManager.Classes
             result.DidSucceed = didEnter;
             return result;
         }
+
     }
 }

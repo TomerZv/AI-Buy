@@ -44,7 +44,7 @@ namespace AuctionManager.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != auction.ID)
+            if (id != auction.Id)
             {
                 return BadRequest();
             }
@@ -82,7 +82,7 @@ namespace AuctionManager.Controllers
             db.auctions.Add(auction);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = auction.ID }, auction);
+            return CreatedAtRoute("DefaultApi", new { id = auction.Id }, auction);
         }
 
         // DELETE: api/Auctions/5
@@ -112,7 +112,7 @@ namespace AuctionManager.Controllers
 
         private bool AuctionExists(int id)
         {
-            return db.auctions.Count(e => e.ID == id) > 0;
+            return db.auctions.Count(e => e.Id == id) > 0;
         }
     }
 }
