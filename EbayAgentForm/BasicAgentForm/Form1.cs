@@ -56,7 +56,7 @@ namespace BasicAgentForm
                     }
                 }
 
-                InitializeAgent(client);
+                await InitializeAgent(client);
 
                 //string postBody = @"{""ID"":2,""AuctionID"":1,""Price"":200,""Username"":""Tomer"",""Date"":""2015-12-17T03:24:00""}";
                 //HttpResponseMessage x = await client.PostAsync(resourceAddress, new StringContent(postBody, Encoding.UTF8, "application/json"));
@@ -65,7 +65,7 @@ namespace BasicAgentForm
             MessageBox.Show(this.Behavior.ToString() + " " + this.Price + " " + this.Auction.Id); 
         }
 
-        private async void InitializeAgent(HttpClient client)
+        private async Task InitializeAgent(HttpClient client)
         {
             var auctions = await GetAuctions(client);
 
