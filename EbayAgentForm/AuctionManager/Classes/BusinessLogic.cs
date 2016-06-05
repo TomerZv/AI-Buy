@@ -134,6 +134,7 @@ namespace AuctionManager.Classes
                 }
                 else
                 {
+                    bid.ID = Guid.NewGuid();
                     auction.Biddings.Add(bid);
                     auction.CurrentPrice = bid.Price;
                 }
