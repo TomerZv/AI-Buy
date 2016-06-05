@@ -84,6 +84,7 @@ namespace BasicAgentForm
 
             try
             {
+                // רצים על המכירה כל עוד היא לא הסתיימה ולא נצברו הרבה שגיאות 
                 while (this.Auction.EndDate > DateTime.Now && FailedCount < 10)
                 {
                     HttpResponseMessage response = await client.GetAsync("/GetAuction/" + this.Auction.Id);
@@ -96,25 +97,31 @@ namespace BasicAgentForm
                     {
                         FailedCount++;
                     }
-
-                    if (this.Auction.CurrentPrice + this.Auction.MinBid < this.Price)
-                    {
-                        string postBody = string.Format(@"{""AuctionID"":{1},""Price"":{2},""Username"":""{3}"",""Date"":{4}""}",
-                                                        this.Auction.Id,
-                                                        this.Auction.CurrentPrice + this.Auction.MinBid,
-                                                        this.AgentName,
-                                                        DateTime.Now);
-
-                        HttpResponseMessage postresponse = await client.PostAsync("PlaceBidOnAuction", new StringContent(postBody, Encoding.UTF8, "application/json"));
-
-                        if (!postresponse.IsSuccessStatusCode)
+            
+                    // בדיקה שההצעה האחרונה היא לא של הסוכן הנוכחי
+                    if (this.Auction.Biddings.Last().Username != this.AgentName)
+                    { 
+                        // בדיקה שהסכום שהסוכן מוכן לתת גבוה מהמחיר המינמלי להצעה הבאה
+                        if (this.Auction.CurrentPrice + this.Auction.MinBid < this.Price)
                         {
-                            FailedCount++;
+                            string postBody = string.Format(@"{""AuctionID"":{1},""Price"":{2},""Username"":""{3}"",""Date"":{4}""}",
+                                                            this.Auction.Id,
+                                                            this.Auction.CurrentPrice + this.Auction.MinBid,
+                                                            this.AgentName,
+                                                            DateTime.Now);
+
+                            HttpResponseMessage postresponse = await client.PostAsync("PlaceBidOnAuction", new StringContent(postBody, Encoding.UTF8, "application/json"));
+
+                            if (!postresponse.IsSuccessStatusCode)
+                            {
+                                FailedCount++;
+                            }
                         }
-                    }
-                    else
-                    {
-                        break;
+                        // נפסיק להציע במידה וסכום המכירה גבוה מהסכום שאנו מוכנים לשלם
+                        else
+                        {
+                            break;
+                        }
                     }
 
                     Thread.Sleep(1000);
