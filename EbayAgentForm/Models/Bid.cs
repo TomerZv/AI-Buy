@@ -9,7 +9,7 @@ namespace Models
     public class Bid
     {
         [Key]
-        public int ID { get; set; }
+        public Guid ID { get; set; }
         public int AuctionID { get; set; }
         public int Price { get; set; }
         public string Username { get; set; }
