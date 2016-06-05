@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using Models;
 using System.Data.Entity;
 using System.Threading;
+using System.IO;
 
 namespace BasicAgentForm
 {
@@ -30,6 +31,10 @@ namespace BasicAgentForm
         public Auction Auction { get; set; }
         public Behavior Behavior { get; set; }
         public int Price { get; set; }
+
+        public int FailedCount  {get; set; }
+
+        public string AgentName { get; set; }
 
         public Form1()
         {
@@ -67,6 +72,8 @@ namespace BasicAgentForm
 
         private async Task InitializeAgent(HttpClient client)
         {
+            FailedCount = 0;
+            AgentName = "Agent" + new Random().Next(1, 10000).ToString();
             var auctions = await GetAuctions(client);
 
             this.Auction = auctions[ChooseAuction(auctions.Count)];
@@ -74,6 +81,49 @@ namespace BasicAgentForm
             ChooseBehavior();
 
             ChoosePrice(this.Behavior, this.Auction.AvgPrice);
+
+            try
+            {
+                while (this.Auction.EndDate > DateTime.Now && FailedCount < 10)
+                {
+                    HttpResponseMessage response = await client.GetAsync("/GetAuction/" + this.Auction.Id);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        this.Auction = await response.Content.ReadAsAsync<Auction>();
+                    }
+                    else
+                    {
+                        FailedCount++;
+                    }
+
+                    if (this.Auction.CurrentPrice + this.Auction.MinBid < this.Price)
+                    {
+                        string postBody = string.Format(@"{""AuctionID"":{1},""Price"":{2},""Username"":""{3}"",""Date"":{4}""}",
+                                                        this.Auction.Id,
+                                                        this.Auction.CurrentPrice + this.Auction.MinBid,
+                                                        this.AgentName,
+                                                        DateTime.Now);
+
+                        HttpResponseMessage postresponse = await client.PostAsync("PlaceBidOnAuction", new StringContent(postBody, Encoding.UTF8, "application/json"));
+
+                        if (!postresponse.IsSuccessStatusCode)
+                        {
+                            FailedCount++;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                    Thread.Sleep(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllText("errors.txt", ex.Message.ToString());
+            }
         }
 
         private async Task<List<Auction>> GetAuctions(HttpClient client)

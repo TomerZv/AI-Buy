@@ -72,8 +72,9 @@ namespace AuctionManager.Classes
                     Auction auc = new Auction();
                     auc.Id = int.Parse(values[0]);
                     auc.ItemType = values[1];
-                    auc.StartDate = int.Parse(values[2]);
+                    auc.StartDate = DateTime.Now;
                     auc.Duration = int.Parse(values[3]);
+                    auc.EndDate = auc.StartDate.AddDays(auc.Duration);
                     auc.MinimumPrice = int.Parse(values[4]);
                     auc.AvgPrice = int.Parse(values[5]);
                     auc.MinBid = int.Parse(values[6]);
