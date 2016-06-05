@@ -17,11 +17,34 @@ namespace Models
         public int MinimumPrice { get; set; }
         public int AvgPrice { get; set; }
         public int MinBid { get; set; }
-        public int CurrentPrice { get; set; }
-
         public List<Bid> Biddings { get; set; }
-
         public AuctionStatus Status { get; set; }
+
+        public Bid CurrentBid
+        {
+            get
+            {
+                if (this.Biddings.Count == 0)
+                {
+                    return null;
+                }
+
+                return this.Biddings.Last();
+            }
+        }
+
+        public int CurrentPrice
+        {
+            get
+            {
+                if (this.CurrentBid == null)
+                {
+                    return 0;
+                }
+
+                return CurrentBid.Price;
+            }
+        }
     }
 
     public enum AuctionStatus

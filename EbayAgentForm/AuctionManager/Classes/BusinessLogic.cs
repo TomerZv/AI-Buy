@@ -79,7 +79,6 @@ namespace AuctionManager.Classes
                     auc.AvgPrice = int.Parse(values[5]);
                     auc.MinBid = int.Parse(values[6]);
                     auc.Biddings = new List<Bid>();
-                    auc.CurrentPrice = 0;
 
                     Auctions.Add(auc.Id, new Tuple<Auction, object>(auc, new Object()));       
                 }
@@ -135,7 +134,6 @@ namespace AuctionManager.Classes
                 else
                 {
                     auction.Biddings.Add(bid);
-                    auction.CurrentPrice = bid.Price;
                 }
             }
             else
