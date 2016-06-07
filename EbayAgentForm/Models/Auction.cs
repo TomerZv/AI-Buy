@@ -18,7 +18,19 @@ namespace Models
         public int AvgPrice { get; set; }
         public int MinBid { get; set; }
         public List<Bid> Biddings { get; set; }
-        public AuctionStatus Status { get; set; }
+        public AuctionStatus Status
+        {
+            get
+            {
+                AuctionStatus status = AuctionStatus.Close;
+
+                if (DateTime.Now < this.StartDate) status = AuctionStatus.Future;
+                if ((DateTime.Now >= this.StartDate) && (DateTime.Now <= this.EndDate)) status = AuctionStatus.Open;
+                if (DateTime.Now > this.EndDate) status = AuctionStatus.Close;
+
+                return status;
+            }
+        }
 
         public Bid CurrentBid
         {
