@@ -103,9 +103,9 @@ namespace AuctionManager.Classes
             IsAuctionsStarted = true;
         }
 
-        public Auction GetAuction(int auctionId)
+        public Auction GetAuction(int id)
         {
-            return Auctions[auctionId].Item1;
+            return Auctions[id].Item1;
         }
 
         public BidResult PlaceBidOnAuction(Bid bid)

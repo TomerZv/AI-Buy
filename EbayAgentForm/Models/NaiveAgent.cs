@@ -52,40 +52,40 @@ namespace Models
             // רצים על המכירה כל עוד היא לא הסתיימה ולא נצברו הרבה שגיאות 
             while (Auction.EndDate > DateTime.Now && FailedCount < 10)
             {
-                HttpResponseMessage response = await Client.GetAsync("/GetAuction/" + Auction.Id);
+                HttpResponseMessage response = await Client.GetAsync("GetAuction?id=" + Auction.Id);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    this.Auction = await response.Content.ReadAsAsync<Auction>();
-                }
-                else
+                if (!response.IsSuccessStatusCode)
                 {
                     FailedCount++;
                 }
-
-                // בדיקה שההצעה האחרונה היא לא של הסוכן הנוכחי
-                if (Auction.CurrentBid.Username != Name)
+                else
                 {
-                    // בדיקה שהסכום שהסוכן מוכן לתת גבוה מהמחיר המינמלי להצעה הבאה
-                    if (Auction.CurrentPrice + Auction.MinBid < Price)
+                    this.Auction = await response.Content.ReadAsAsync<Auction>();
+
+                    // בדיקה שההצעה האחרונה היא לא של הסוכן הנוכחי
+                    if (Auction.CurrentBid == null || Auction.CurrentBid.Username != Name)
                     {
-                        string postBody = string.Format(@"{""AuctionID"":{1},""Price"":{2},""Username"":""{3}"",""Date"":{4}""}",
-                                                        Auction.Id,
-                                                        Auction.CurrentPrice + Auction.MinBid,
-                                                        Name,
-                                                        DateTime.Now);
-
-                        HttpResponseMessage postresponse = await Client.PostAsync("PlaceBidOnAuction", new StringContent(postBody, Encoding.UTF8, "application/json"));
-
-                        if (!postresponse.IsSuccessStatusCode)
+                        // בדיקה שהסכום שהסוכן מוכן לתת גבוה מהמחיר המינמלי להצעה הבאה
+                        if (Auction.CurrentPrice + Auction.MinBid < Price)
                         {
-                            FailedCount++;
+                            string postBody = string.Format(@"{""AuctionID"":{1},""Price"":{2},""Username"":""{3}"",""Date"":{4}""}",
+                                                            Auction.Id,
+                                                            Auction.CurrentPrice + Auction.MinBid,
+                                                            Name,
+                                                            DateTime.Now);
+
+                            HttpResponseMessage postresponse = await Client.PostAsync("PlaceBidOnAuction", new StringContent(postBody, Encoding.UTF8, "application/json"));
+
+                            if (!postresponse.IsSuccessStatusCode)
+                            {
+                                FailedCount++;
+                            }
                         }
-                    }
-                    // נפסיק להציע במידה וסכום המכירה גבוה מהסכום שאנו מוכנים לשלם
-                    else
-                    {
-                        break;
+                        // נפסיק להציע במידה וסכום המכירה גבוה מהסכום שאנו מוכנים לשלם
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
 
