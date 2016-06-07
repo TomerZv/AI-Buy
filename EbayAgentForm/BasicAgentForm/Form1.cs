@@ -61,8 +61,10 @@ namespace BasicAgentForm
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                client.GetAsync("GetAuctionsFromFile");
-                client.GetAsync("InitAuctions");
+                await client.GetAsync("GetAuctionsFromFile");
+                await client.GetAsync("InitAuctions");
+
+                MessageBox.Show("Finished initlization");
             }
         }
     }
