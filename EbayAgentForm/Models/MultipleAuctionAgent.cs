@@ -9,6 +9,8 @@ namespace Models
 {
     public class MultipleAuctionAgent : IAgent
     {
+        const double PERCENT_FROM_AVG = 0.8;
+
         public Auction Auction { get; set; }
 
         public string Name { get; set; }
@@ -18,6 +20,16 @@ namespace Models
         private HttpClient Client { get; set; }
 
         static Random random = new Random();
+
+        public bool IsWinAuction { get; set; }
+
+        public int AuctionsFinishedCount { get; set; }
+
+        public List<Auction> AuctionToParticipate {get; set;}
+
+        public List<Auction> RelevantAuctions { get; set; }
+
+        public int Price { get; set; }
 
         public async Task Initialize(HttpClient client)
         {
@@ -30,12 +42,16 @@ namespace Models
 
             List<int> indexes = GenerateRandom(auctions.Count / 2, auctions.Count);
 
-            List<Auction> auctionToParticipate = new List<Auction>();
+            AuctionToParticipate = new List<Auction>();
 
             foreach (int index in indexes)
             {
-                auctionToParticipate.Add(auctions.ElementAt(index));
+                AuctionToParticipate.Add(auctions.ElementAt(index));
             }
+
+            AuctionToParticipate = AuctionToParticipate.OrderBy(x => x.EndDate).ToList();
+            
+            this.Price = (int)Math.Round(auctions.First().AvgPrice * PERCENT_FROM_AVG);
         }
 
         public static List<int> GenerateRandom(int count, int maxNum)
@@ -60,7 +76,92 @@ namespace Models
 
         public async Task ParticipateAuction()
         {
-            throw new NotImplementedException();
+            RelevantAuctions = new List<Auction>(AuctionToParticipate);
+            
+            int i = 0;
+            Auction currentAuction;
+
+            while (!IsWinAuction && RelevantAuctions.Count > 0)
+            {
+                currentAuction = RelevantAuctions.ElementAt(i);
+
+                HttpResponseMessage response = await Client.GetAsync("GetAuction?id=" + currentAuction.Id);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    FailedCount++;
+                }
+                else
+                {
+                    currentAuction = await response.Content.ReadAsAsync<Auction>();
+
+                    if (currentAuction.Status != AuctionStatus.Open)
+                    {
+                        if (currentAuction.Status == AuctionStatus.Close)
+                        {
+                            RelevantAuctions.Remove(currentAuction);
+                        }
+                        else
+                        {
+                            i++;
+                        }
+
+                        continue;
+                    }
+                    else
+                    {
+
+                        // בדיקה שההצעה האחרונה היא לא של הסוכן הנוכחי
+                        if (currentAuction.CurrentBid == null || currentAuction.CurrentBid.Username != Name)
+                        {
+                            // בדיקה שהסכום שהסוכן מוכן לתת גבוה מהמחיר המינמלי להצעה הבאה
+                            if (currentAuction.CurrentPrice + currentAuction.MinBid < Price)
+                            {
+                                string postBody = string.Format(@"{{""AuctionID"":{0},""Price"":{1},""Username"":""{2}"",""Date"":""{3}""}}",
+                                                                Auction.Id,
+                                                                Auction.CurrentPrice + Auction.MinBid,
+                                                                Name,
+                                                                DateTime.Now);
+
+                                HttpResponseMessage postresponse = await Client.PostAsync("PlaceBidOnAuction", new StringContent(postBody, Encoding.UTF8, "application/json"));
+
+                                if (!postresponse.IsSuccessStatusCode)
+                                {
+                                    FailedCount++;
+                                }
+
+                                i++;
+                            }
+                            // נפסיק להציע במידה וסכום המכירה גבוה מהסכום שאנו מוכנים לשלם
+                            else
+                            {
+                                RelevantAuctions.Remove(currentAuction);
+                            }
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                    }
+                }
+
+                CheckWinAuctions();
+            }
+        }
+
+        private async void CheckWinAuctions()
+        {
+            foreach (Auction auc in AuctionToParticipate)
+            {
+                HttpResponseMessage response = await Client.GetAsync("GetAuction?id=" + auc.Id);
+                Auction auc2 = await response.Content.ReadAsAsync<Auction>();
+
+                if (auc2.Status == AuctionStatus.Close && auc2.CurrentBid.Username == this.Name)
+                {
+                    IsWinAuction = true;
+                    break;
+                }
+            }
         }
 
         private async Task<List<Auction>> GetAuctions(HttpClient client)
