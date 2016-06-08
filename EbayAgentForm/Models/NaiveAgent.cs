@@ -49,8 +49,11 @@ namespace Models
 
         public async Task ParticipateAuction()
         {
+            // Waiting untill the auction is open.
+            while (Auction.Status != AuctionStatus.Open) ;
+
             // רצים על המכירה כל עוד היא לא הסתיימה ולא נצברו הרבה שגיאות 
-            while (Auction.EndDate > DateTime.Now && FailedCount < 10)
+            while (Auction.Status == AuctionStatus.Open && FailedCount < 10)
             {
                 HttpResponseMessage response = await Client.GetAsync("GetAuction?id=" + Auction.Id);
 
@@ -68,7 +71,7 @@ namespace Models
                         // בדיקה שהסכום שהסוכן מוכן לתת גבוה מהמחיר המינמלי להצעה הבאה
                         if (Auction.CurrentPrice + Auction.MinBid < Price)
                         {
-                            string postBody = string.Format(@"{""AuctionID"":{1},""Price"":{2},""Username"":""{3}"",""Date"":{4}""}",
+                            string postBody = string.Format(@"{{""AuctionID"":{0},""Price"":{1},""Username"":""{2}"",""Date"":""{3}""}}",
                                                             Auction.Id,
                                                             Auction.CurrentPrice + Auction.MinBid,
                                                             Name,

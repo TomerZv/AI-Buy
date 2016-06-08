@@ -119,9 +119,9 @@ namespace AuctionManager.Classes
             }
             Object locker = Auctions[bid.AuctionID].Item2;
 
-            bool didEnter = true;
+            bool didEnter = Monitor.TryEnter(locker);
             Auction auction;
-            Monitor.TryEnter(locker, ref didEnter);
+
             if (didEnter)
             {
                 auction = Auctions[bid.AuctionID].Item1;
