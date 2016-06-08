@@ -48,7 +48,7 @@ namespace Models
 			{
                 do
                 {
-                    number = random.Next();
+                    number = random.Next(0, maxNum);
                 } while (randomNumbers.Contains(number));
 
                 randomNumbers.Add(number);
