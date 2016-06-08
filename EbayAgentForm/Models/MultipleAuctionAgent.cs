@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Models
@@ -118,8 +119,8 @@ namespace Models
                             if (currentAuction.CurrentPrice + currentAuction.MinBid < Price)
                             {
                                 string postBody = string.Format(@"{{""AuctionID"":{0},""Price"":{1},""Username"":""{2}"",""Date"":""{3}""}}",
-                                                                Auction.Id,
-                                                                Auction.CurrentPrice + Auction.MinBid,
+                                                                currentAuction.Id,
+                                                                currentAuction.CurrentPrice + currentAuction.MinBid,
                                                                 Name,
                                                                 DateTime.Now);
 
@@ -146,6 +147,7 @@ namespace Models
                 }
 
                 CheckWinAuctions();
+                Thread.Sleep(1000);
             }
         }
 

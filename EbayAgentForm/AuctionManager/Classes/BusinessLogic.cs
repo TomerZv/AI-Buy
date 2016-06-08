@@ -135,6 +135,8 @@ namespace AuctionManager.Classes
                 {
                     bid.ID = Guid.NewGuid();
                     auction.Biddings.Add(bid);
+
+                    File.AppendAllText(@"c:\log\log.txt",string.Format("User {0}, pays {1}, for auction id {2}, at {3}" + Environment.NewLine, bid.Username, bid.Price, bid.AuctionID, bid.Date));
                 }
             }
             else

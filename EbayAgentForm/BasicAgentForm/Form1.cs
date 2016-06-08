@@ -23,11 +23,18 @@ namespace BasicAgentForm
         public Form1()
         {
             InitializeComponent();
-            Agent = new NaiveAgent();
         }
 
         private async void button1_Click(object sender, EventArgs e)
         {
+            if (comboBox1.Text == "Naive")
+            {
+                Agent = new NaiveAgent();            
+            }
+            else
+            {
+                Agent = new MultipleAuctionAgent();
+            }
             var client = new HttpClient();
             {
                 client.BaseAddress = new Uri(@"http://localhost:8670/api/manageauctions/");
