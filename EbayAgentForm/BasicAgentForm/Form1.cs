@@ -30,12 +30,12 @@ namespace BasicAgentForm
             {
                 if (args[1] == "Init")
                 {
-                    button2.PerformClick();
+                    InitializeServer(new object(), EventArgs.Empty);
                 }
                 else
                 {
                     comboBox1.Text = args[1];
-                    button1.PerformClick();
+                    button1_Click(new object(), EventArgs.Empty);
                 }
             }
         }
