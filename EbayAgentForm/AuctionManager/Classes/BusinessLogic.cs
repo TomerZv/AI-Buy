@@ -40,6 +40,8 @@ namespace AuctionManager.Classes
 
         private static bool IsAuctionsStarted { get; set; }
 
+        private static object FileLocker = new object();
+
         #endregion
 
         private BusinessLogic()
@@ -53,11 +55,30 @@ namespace AuctionManager.Classes
             return IsAuctionsStarted;
         }
 
+        public bool PrintResults()
+        {
+            File.AppendAllText(@"c:\log\final.txt","Auc ID, Agent, Price" + Environment.NewLine);
+            foreach (Auction auc in this.GetAllAuction())
+            {
+                string userName = "No Winner";
+                string price = "No Price";
+                if (auc.CurrentBid != null)
+                {
+                    userName = auc.CurrentBid.Username;
+                    price = auc.CurrentBid.Price.ToString();
+                }
+                
+                File.AppendAllText(@"c:\log\final.txt", string.Format("{0},{1},{2},{3}", auc.Id, userName, price, Environment.NewLine));
+            }
+
+            return true;
+        }
+
         public void ReadAuctions()
         {
             Auctions.Clear();
 
-            HttpWebRequest req = (HttpWebRequest)WebRequest.Create("http://localhost:8670/Content/AITrainingData.csv");
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create("http://localhost:8670/Content/AITrainingDataSmall.csv");
             HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
 
             using (StreamReader sr = new StreamReader(resp.GetResponseStream()))
@@ -136,7 +157,10 @@ namespace AuctionManager.Classes
                     bid.ID = Guid.NewGuid();
                     auction.Biddings.Add(bid);
 
-                    File.AppendAllText(@"c:\log\log.txt",string.Format("User {0}, pays {1}, for auction id {2}, at {3}" + Environment.NewLine, bid.Username, bid.Price, bid.AuctionID, bid.Date));
+                    lock (FileLocker)
+                    {
+                        File.AppendAllText(@"c:\log\log.txt", string.Format("User {0}, pays {1}, for auction id {2}, at {3}" + Environment.NewLine, bid.Username, bid.Price, bid.AuctionID, bid.Date));
+                    }
                 }
             }
             else

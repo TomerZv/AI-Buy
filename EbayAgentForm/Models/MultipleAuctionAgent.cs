@@ -32,13 +32,15 @@ namespace Models
 
         public int Price { get; set; }
 
+        public bool FailedInit { get; set; }
+
         public async Task Initialize(HttpClient client)
         {
             this.Client = client;
             this.FailedCount = 0;
 
             // TODO : Make this real.
-            this.Name = "Agent" + random.Next(1, 10000).ToString();
+            this.Name = "Multi Agent " + random.Next(1, 10000).ToString();
             var auctions = await GetAuctions(client);
 
             List<int> indexes = GenerateRandom(auctions.Count / 2, auctions.Count);
@@ -84,6 +86,7 @@ namespace Models
 
             while (!IsWinAuction && RelevantAuctions.Count > 0)
             {
+                i = i % RelevantAuctions.Count;
                 currentAuction = RelevantAuctions.ElementAt(i);
 
                 HttpResponseMessage response = await Client.GetAsync("GetAuction?id=" + currentAuction.Id);
@@ -100,7 +103,7 @@ namespace Models
                     {
                         if (currentAuction.Status == AuctionStatus.Close)
                         {
-                            RelevantAuctions.Remove(currentAuction);
+                            RelevantAuctions.Remove(RelevantAuctions.First(auc => auc.Id == currentAuction.Id));
                         }
                         else
                         {
@@ -111,7 +114,6 @@ namespace Models
                     }
                     else
                     {
-
                         // בדיקה שההצעה האחרונה היא לא של הסוכן הנוכחי
                         if (currentAuction.CurrentBid == null || currentAuction.CurrentBid.Username != Name)
                         {
@@ -136,7 +138,7 @@ namespace Models
                             // נפסיק להציע במידה וסכום המכירה גבוה מהסכום שאנו מוכנים לשלם
                             else
                             {
-                                RelevantAuctions.Remove(currentAuction);
+                                RelevantAuctions.Remove(RelevantAuctions.First(auc => auc.Id == currentAuction.Id));
                             }
                         }
                         else
@@ -156,12 +158,16 @@ namespace Models
             foreach (Auction auc in AuctionToParticipate)
             {
                 HttpResponseMessage response = await Client.GetAsync("GetAuction?id=" + auc.Id);
-                Auction auc2 = await response.Content.ReadAsAsync<Auction>();
 
-                if (auc2.Status == AuctionStatus.Close && auc2.CurrentBid.Username == this.Name)
+                if (response.IsSuccessStatusCode)
                 {
-                    IsWinAuction = true;
-                    break;
+                    Auction auc2 = await response.Content.ReadAsAsync<Auction>();
+
+                    if (auc2.Status == AuctionStatus.Close && auc2.CurrentBid.Username == this.Name)
+                    {
+                        IsWinAuction = true;
+                        break;
+                    }
                 }
             }
         }

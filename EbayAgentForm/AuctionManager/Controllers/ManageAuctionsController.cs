@@ -23,6 +23,13 @@ namespace AuctionManager.Controllers
             return BusinessLogic.Instance.GetAuction(id);
         }
 
+        [Route("api/ManageAuctions/PrintResults")]
+        [HttpGet()]
+        public bool PrintResults()
+        {
+            return BusinessLogic.Instance.PrintResults();
+        }
+
         [Route("api/ManageAuctions/IsStarted")]
         [HttpGet()]
         public bool IsStarted()

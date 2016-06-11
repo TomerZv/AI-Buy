@@ -43,8 +43,9 @@ namespace Models
 
         private int FailedCount { get; set; }
 
-        private HttpClient Client { get; set; } 
+        private HttpClient Client { get; set; }
 
+        public bool FailedInit { get; set; }
         #endregion
 
         public async Task ParticipateAuction()
@@ -100,24 +101,36 @@ namespace Models
         {
             this.Client = client;
             this.FailedCount = 0;
+            this.FailedInit = true;
 
             // TODO : Make this real.
             this.Name = "Agent" + new Random().Next(1, 10000).ToString();
-            var auctions = await GetAuctions(client);
+            List<Auction> auctions = await GetAuctions(client);
 
-            this.Auction = auctions[ChooseAuction(auctions.Count)];
+            // Check request succeed
+            if (auctions.Count != 0)
+            {
+                this.Auction = auctions[ChooseAuction(auctions.Count)];
 
-            ChooseBehavior();
+                ChooseBehavior();
 
-            ChoosePrice(this.Behavior, this.Auction.AvgPrice);
+                ChoosePrice(this.Behavior, this.Auction.AvgPrice);
+
+                this.FailedInit = false;
+            }
         }
 
         private async Task<List<Auction>> GetAuctions(HttpClient client)
         {
-            var task = Task.Factory.StartNew(() => client.GetAsync("GetAuctions"));
-            await task.Result;
-            var temp = await task.Result.Result.Content.ReadAsAsync<List<Auction>>();
-            return temp;
+            HttpResponseMessage response = await Client.GetAsync("GetAuctions");
+            List<Auction> lst = new List<Auction>();
+
+            if (response.IsSuccessStatusCode)
+            {
+               lst = await response.Content.ReadAsAsync<List<Auction>>();
+            }
+
+            return lst;
         }
 
         private void ChooseBehavior()
@@ -166,7 +179,11 @@ namespace Models
 
         private int ChooseAuction(int count)
         {
-            return new Random().Next(1, count + 1);
+            return new Random().Next(0, count);
         }
+
+
+        
+        
     }
 }

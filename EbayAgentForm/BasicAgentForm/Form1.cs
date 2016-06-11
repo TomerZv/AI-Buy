@@ -55,9 +55,12 @@ namespace BasicAgentForm
 
                 await Agent.Initialize(client);
 
-                await Agent.ParticipateAuction();
+                if (!Agent.FailedInit)
+                {
+                    await Agent.ParticipateAuction();
+                }
             }
-            //MessageBox.Show(this.Behavior.ToString() + " " + this.Price + " " + this.Auction.Id); 
+           
         }
 
         private async void InitializeServer(object sender, EventArgs e)
