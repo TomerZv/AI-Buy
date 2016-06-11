@@ -23,6 +23,21 @@ namespace BasicAgentForm
         public Form1()
         {
             InitializeComponent();
+
+            string[] args = Environment.GetCommandLineArgs();
+
+            if (args.Length > 1)
+            {
+                if (args[1] == "Init")
+                {
+                    button2.PerformClick();
+                }
+                else
+                {
+                    comboBox1.Text = args[1];
+                    button1.PerformClick();
+                }
+            }
         }
 
         private async void button1_Click(object sender, EventArgs e)
