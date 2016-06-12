@@ -42,12 +42,19 @@ namespace AuctionManager.Classes
 
         private static object FileLocker = new object();
 
+        private static int fileCounter = 1;
+
         #endregion
 
         private BusinessLogic()
         {
             Auctions = new Dictionary<int, Tuple<Auction, object>>();
             IsAuctionsStarted = false;
+
+            while (File.Exists(@"c:\log\log" + fileCounter + ".txt"))
+            {
+                fileCounter++;
+            }
         }
 
         public bool IsStarted()
@@ -159,17 +166,17 @@ namespace AuctionManager.Classes
 
                     lock (FileLocker)
                     {
-                        File.AppendAllText(@"c:\log\log.txt", string.Format("User {0}, pays {1}, for auction id {2}, at {3}" + Environment.NewLine, bid.Username, bid.Price, bid.AuctionID, bid.Date));
+                        File.AppendAllText(@"c:\log\log"+fileCounter+".txt", string.Format("User {0}, pays {1}, for auction id {2}, at {3}" + Environment.NewLine, bid.Username, bid.Price, bid.AuctionID, bid.Date));
                     }
                 }
+
+                Monitor.Exit(locker);
             }
             else
             {
-                Monitor.Wait(locker);
+                //Monitor.Wait(locker);
                 auction = Auctions[bid.AuctionID].Item1;
             }
-
-            Monitor.Exit(locker);
 
             result.DidSucceed = didEnter;
             return result;
