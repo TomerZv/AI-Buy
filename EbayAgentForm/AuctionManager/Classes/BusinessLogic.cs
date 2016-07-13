@@ -38,6 +38,7 @@ namespace AuctionManager.Classes
 
         private static Dictionary<int, Tuple<Auction, Object>> Auctions { get; set; }
         private static Dictionary<int, List<string>> AuctionsToAgents { get; set; }
+        private static List<string> AllAgents { get; set; }
 
         private static bool IsAuctionsStarted { get; set; }
 
@@ -51,6 +52,8 @@ namespace AuctionManager.Classes
         {
             Auctions = new Dictionary<int, Tuple<Auction, object>>();
             AuctionsToAgents = new Dictionary<int, List<string>>();
+            AllAgents = new List<string>();
+
             IsAuctionsStarted = false;
 
             while (File.Exists(@"c:\log\log" + fileCounter + ".txt"))
@@ -67,6 +70,35 @@ namespace AuctionManager.Classes
         public bool PrintResults()
         {
             File.AppendAllText(@"c:\log\final.txt","Auc ID, Agent, Price" + Environment.NewLine);
+
+            
+
+            int totalAuction = this.GetAllAuction().Count;
+            double sumAllPrices = 0;
+            int multiAgentWinsCount = 0;
+            double minPriceMultiWin = double.MaxValue;
+
+            foreach (Auction auc in this.GetAllAuction())
+            {
+                sumAllPrices += auc.CurrentPrice;
+
+                if (auc.CurrentBid.Username.StartsWith("Multi"))
+                {
+                    multiAgentWinsCount++;
+                    if (minPriceMultiWin > auc.CurrentBid.Price)
+                    {
+                        minPriceMultiWin = auc.CurrentBid.Price;
+                    }
+                }
+            }
+
+            double avgPrice = sumAllPrices / totalAuction;
+            double midPrice = this.GetAllAuction().OrderBy(x => x.CurrentPrice).ToList().ElementAt((int)(totalAuction / 2)).CurrentPrice;
+
+            File.AppendAllText(@"c:\log\Summary.txt", "Total Naive Agents, Avg Price, Mid Price, Total Multi won, Multi min price won" + Environment.NewLine);
+            File.AppendAllText(@"c:\log\Summary.txt", string.Format("{0},{1},{2},{3},{4}", AllAgents.Count, avgPrice, midPrice, multiAgentWinsCount, minPriceMultiWin));
+
+
             foreach (Auction auc in this.GetAllAuction())
             {
                 string userName = "No Winner";
@@ -208,6 +240,11 @@ namespace AuctionManager.Classes
                 }
 
                 AuctionsToAgents[selectedAuctionId].Add(agentName);
+            }
+
+            if (!AllAgents.Contains(agentName))
+            { 
+                AllAgents.Add(agentName);
             }
 
             return selectedAuctionId;
