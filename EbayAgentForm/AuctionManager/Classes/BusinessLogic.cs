@@ -37,6 +37,7 @@ namespace AuctionManager.Classes
         #region Data Members
 
         private static Dictionary<int, Tuple<Auction, Object>> Auctions { get; set; }
+        private static Dictionary<int, List<string>> AuctionsToAgents { get; set; }
 
         private static bool IsAuctionsStarted { get; set; }
 
@@ -49,6 +50,7 @@ namespace AuctionManager.Classes
         private BusinessLogic()
         {
             Auctions = new Dictionary<int, Tuple<Auction, object>>();
+            AuctionsToAgents = new Dictionary<int, List<string>>();
             IsAuctionsStarted = false;
 
             while (File.Exists(@"c:\log\log" + fileCounter + ".txt"))
@@ -182,5 +184,33 @@ namespace AuctionManager.Classes
             return result;
         }
 
+        public int ChooseAuctionForAgent(string agentName)
+        {
+            int selectedAuctionId;
+
+            lock(AuctionsToAgents)
+            {
+                List<int> emptyAuctions = Auctions.Keys.Where(auctionId => !AuctionsToAgents.Keys.Contains(auctionId)).ToList();
+
+                if (emptyAuctions.Count != 0)
+                {
+                    int index = new Random().Next(0, emptyAuctions.Count);
+
+                    selectedAuctionId = emptyAuctions[index];
+
+                    AuctionsToAgents.Add(selectedAuctionId, new List<string>());
+                }
+                else
+                {
+                    int index = new Random().Next(0, Auctions.Count);
+
+                    selectedAuctionId = Auctions.Keys.ElementAt(index);
+                }
+
+                AuctionsToAgents[selectedAuctionId].Add(agentName);
+            }
+
+            return selectedAuctionId;
+        }
     }
 }

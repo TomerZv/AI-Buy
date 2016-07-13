@@ -110,7 +110,9 @@ namespace Models
             // Check request succeed
             if (auctions.Count != 0)
             {
-                this.Auction = auctions[ChooseAuction(auctions.Count)];
+                int auctionId = await ChooseAuction();
+
+                this.Auction = auctions.First(a => a.Id == auctionId);
 
                 ChooseBehavior();
 
@@ -177,9 +179,18 @@ namespace Models
             }
         }
 
-        private int ChooseAuction(int count)
+        private async Task<int> ChooseAuction()
         {
-            return new Random().Next(0, count);
+            HttpResponseMessage response = await Client.GetAsync("ChooseAuctionForAgent?agent=" + this.Name);
+
+            int auctionId = -1; 
+
+            if (response.IsSuccessStatusCode)
+            {
+                auctionId = await response.Content.ReadAsAsync<int>();
+            }
+
+            return auctionId;
         }
 
 

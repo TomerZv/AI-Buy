@@ -59,5 +59,12 @@ namespace AuctionManager.Controllers
         {
             BusinessLogic.Instance.ReadAuctions();
         }
+
+        [Route("api/ManageAuctions/ChooseAuctionForAgent")]
+        [HttpGet()]
+        public int ChooseAuctionForAgent(string agent)
+        {
+            return BusinessLogic.Instance.ChooseAuctionForAgent(agent);
+        }
     }
 }
