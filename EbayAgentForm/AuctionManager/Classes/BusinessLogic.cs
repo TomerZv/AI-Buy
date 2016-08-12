@@ -95,9 +95,12 @@ namespace AuctionManager.Classes
             double avgPrice = sumAllPrices / totalAuction;
             double midPrice = this.GetAllAuction().OrderBy(x => x.CurrentPrice).ToList().ElementAt((int)(totalAuction / 2)).CurrentPrice;
 
-            File.AppendAllText(@"c:\log\Summary.txt", "Total Naive Agents, Avg Price, Mid Price, Total Multi won, Multi min price won" + Environment.NewLine);
-            File.AppendAllText(@"c:\log\Summary.txt", string.Format("{0},{1},{2},{3},{4}", AllAgents.Count, avgPrice, midPrice, multiAgentWinsCount, minPriceMultiWin));
+            if (!File.Exists(@"c:\log\Summary.txt"))
+            {
+                File.AppendAllText(@"c:\log\Summary.txt", "Total Naive Agents, Avg Price, Mid Price, Total Multi won, Multi min price won" + Environment.NewLine);
+            }
 
+            File.AppendAllText(@"c:\log\Summary.txt", string.Format("{0},{1},{2},{3},{4} {5}", AllAgents.Count, avgPrice, midPrice, multiAgentWinsCount, minPriceMultiWin, Environment.NewLine));
 
             foreach (Auction auc in this.GetAllAuction())
             {
@@ -188,8 +191,8 @@ namespace AuctionManager.Classes
             {
                 auction = Auctions[bid.AuctionID].Item1;
 
-                // Place bid only if the bid is higher than the current price of the auction.
-                if (auction.CurrentPrice >= bid.Price)
+                // Place bid only if the bid is higher than the current price of the auction and its still open
+                if (auction.CurrentPrice >= bid.Price || auction.Status != AuctionStatus.Open)
                 {
                     didEnter = false;
                 }
