@@ -1,0 +1,20 @@
+﻿<div class="panel panel-default">
+    <div ng-click="vm.displayDetails()" class="panel-heading"><strong>Auction {{vm.auction.Id}}</strong> - {{vm.auction.getCurrentBid().Price}}$ by {{vm.auction.getCurrentBid().Username}}</div>
+    <div ng-if="vm.areDetailsDisplayed" class="panel-body">
+        Product is {{vm.auction.ItemType}} <br />
+        Auction started at {{vm.auction.StartDate | date:'dd/MM/yyyy HH:mm:ss'}} and ends at {{vm.auction.EndDate | date:'dd/MM/yyyy HH:mm:ss'}}<br />
+        <label ng-if="vm.didAuctionEnd()">Auction ended.</label>
+        <label ng-if="!vm.didAuctionEnd()">Auction ends in {{vm.durationToEnd() | number: 1}} minutes.</label>
+        <div ng-if="vm.auction.getCurrentBid() != null">
+            {{vm.auction.Biddings.length}} Biddings :
+            <ul>
+                <li ng-repeat="currentBid in vm.auction.Biddings track by $index">
+                    <span ng-style="{color : vm.chooseColor(currentBid.Username)}">{{currentBid.Username}} - {{currentBid.Price}}$</span>
+                </li>
+            </ul>
+        </div>
+        <div ng-if="vm.auction.getCurrentBid() == null">
+            No bids has been placed on this auction yet.
+        </div>
+    </div>
+</div>

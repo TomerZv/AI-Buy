@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Auction Status Reporter</title>
+    <!-- CSS -->
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+
+    <!-- External Libraries -->
+    <script src="Scripts/angular.min.js"></script>
+    <script src="Scripts/angular-route.js"></script>
+    <script src="Scripts/angular-resource.min.js"></script>
+    <script src="Scripts/angular-mocks.js"></script>
+
+    <!-- Application Scripts -->
+    <script src="app/app.js"></script>
+
+    <!-- Business Objects -->
+    <script src="app/auctions/bid.js"></script>
+    <script src="app/auctions/auction.js"></script>
+
+    <!-- Services -->
+    <script src="app/common/services/common.services.js"></script>
+    <script src="app/common/services/dataAccessService.js"></script>
+
+    <!-- Controllers -->
+    <script src="app/auctions/auctionReporterCtrl.js"></script>
+
+    <!-- Components -->
+    <script src="app/auctions/auctionComponent.js"></script>
+
+
+</head>
+<body ng-app="auctionReporter">
+    <nav id="heading" class="page-header navbar-fixed-top" style="background:#2d2d30;color:#bdbdbd;margin-top:0px; padding-left: 5px">
+        <h1>Auction Reporter - <small>Monitors and displays auctions' data.</small></h1>
+    </nav>
+
+    <div style="padding-top:100px">
+        <ng-view></ng-view>
+    </div>
+
+    <div>footer</div>
+</body>
+</html>

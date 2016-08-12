@@ -55,9 +55,10 @@ namespace AuctionManager.Controllers
 
         [Route("api/ManageAuctions/GetAuctionsFromFile")]
         [HttpGet()]
-        public void GetAuctionsFromFile()
+        public bool GetAuctionsFromFile()
         {
             BusinessLogic.Instance.ReadAuctions();
+            return true;
         }
 
         [Route("api/ManageAuctions/ChooseAuctionForAgent")]

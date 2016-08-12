@@ -1,0 +1,5 @@
+﻿<div class="container-fluid">
+    <div ng-repeat="currentAuction in vm.auctions track by $index" class="list-group">
+        <auction-component auction="currentAuction"></auction-component>
+    </div>
+</div>
