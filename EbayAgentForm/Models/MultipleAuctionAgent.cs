@@ -39,42 +39,13 @@ namespace Models
             this.Client = client;
             this.FailedCount = 0;
 
-            // TODO : Make this real.
             this.Name = "Multi Agent " + random.Next(1, 10000).ToString();
             var auctions = await GetAuctions(client);
 
-            List<int> indexes = GenerateRandom(auctions.Count / 2, auctions.Count);
+            int amountOfAuctionToParticipate = (auctions.Count / 2) > 10 ? 10 : (auctions.Count / 2);
+            AuctionToParticipate = auctions.OrderBy(x => x.EndDate).Take(amountOfAuctionToParticipate).ToList();
 
-            AuctionToParticipate = new List<Auction>();
-
-            foreach (int index in indexes)
-            {
-                AuctionToParticipate.Add(auctions.ElementAt(index));
-            }
-
-            AuctionToParticipate = AuctionToParticipate.OrderBy(x => x.EndDate).ToList();
-            
             this.Price = (int)Math.Round(auctions.First().AvgPrice * PERCENT_FROM_AVG);
-        }
-
-        public static List<int> GenerateRandom(int count, int maxNum)
-        {
-            int number;
-
-            // generate count random values.
-            List<int> randomNumbers = new List<int>();
-            for (int i = 0; i < maxNum / 2; i++)
-			{
-                do
-                {
-                    number = random.Next(0, maxNum);
-                } while (randomNumbers.Contains(number));
-
-                randomNumbers.Add(number);
-			}
-
-            return randomNumbers;
-     
         }
 
         public async Task ParticipateAuction()
@@ -118,7 +89,7 @@ namespace Models
                         if (currentAuction.CurrentBid == null || currentAuction.CurrentBid.Username != Name)
                         {
                             // בדיקה שהסכום שהסוכן מוכן לתת גבוה מהמחיר המינמלי להצעה הבאה
-                            if (currentAuction.CurrentPrice + currentAuction.MinBid < Price)
+                            if ((currentAuction.CurrentPrice + currentAuction.MinBid < Price) && (currentAuction.Status != AuctionStatus.Close))
                             {
                                 string postBody = string.Format(@"{{""AuctionID"":{0},""Price"":{1},""Username"":""{2}"",""Date"":""{3}""}}",
                                                                 currentAuction.Id,
@@ -163,7 +134,7 @@ namespace Models
                 {
                     Auction auc2 = await response.Content.ReadAsAsync<Auction>();
 
-                    if (auc2.Status == AuctionStatus.Close && auc2.CurrentBid.Username == this.Name)
+                    if (auc2.Status == AuctionStatus.Close && auc2.CurrentBid != null && auc2.CurrentBid.Username == this.Name)
                     {
                         IsWinAuction = true;
                         break;

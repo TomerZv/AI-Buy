@@ -114,9 +114,9 @@ namespace Models
 
                 this.Auction = auctions.First(a => a.Id == auctionId);
 
-                ChooseBehavior();
+                //ChooseBehavior();
 
-                ChoosePrice(this.Behavior, this.Auction.AvgPrice);
+                ChoosePrice(this.Auction.AvgPrice, 0.35);
 
                 this.FailedInit = false;
             }
@@ -135,48 +135,66 @@ namespace Models
             return lst;
         }
 
-        private void ChooseBehavior()
+        //private void ChooseBehavior()
+        //{
+        //    Random r = new Random();
+        //    int n = r.Next(1, 101);
+        //    this.Behavior = Behavior.Average;
+
+        //    if (n <= BELOW_AVERAGE_PRECENTAGE)
+        //    {
+        //        this.Behavior = Behavior.BelowAverage;
+        //    }
+        //    else if (n >= ABOVE_AVERAGE_PRECENTAGE)
+        //    {
+        //        this.Behavior = Behavior.AboveAverage;
+        //    }
+        //}
+
+        //sigma = סטיית תקן
+        private void ChoosePrice(int avg, double sigma)
         {
             Random r = new Random();
-            int n = r.Next(1, 101);
-            this.Behavior = Behavior.Average;
+            
+            this.Price = 0;
+            double number = generateNumber(r, sigma);
 
-            if (n <= BELOW_AVERAGE_PRECENTAGE)
-            {
-                this.Behavior = Behavior.BelowAverage;
-            }
-            else if (n >= ABOVE_AVERAGE_PRECENTAGE)
-            {
-                this.Behavior = Behavior.AboveAverage;
-            }
+            this.Price = (int)Math.Round(number * avg);
+
+            //switch (b)
+            //{
+            //    case Behavior.BelowAverage:
+            //        {
+            //            this.Price = r.Next((int)Math.Round(avg * BELOW_AVERAGE_MIN), (int)Math.Round(avg * BELOW_AVERAGE_MAX));
+
+            //            break;
+            //        }
+            //    case Behavior.Average:
+            //        {
+            //            this.Price = r.Next((int)Math.Round(avg * AVERAGE_MIN), (int)Math.Round(avg * AVERAGE_MAX));
+
+            //            break;
+            //        }
+            //    case Behavior.AboveAverage:
+            //        {
+            //            this.Price = r.Next((int)Math.Round(avg * ABOVE_AVERAGE_MIN), (int)Math.Round(avg * ABOVE_AVERAGE_MAX));
+
+            //            break;
+            //        }
+            //}
         }
 
-        private void ChoosePrice(Behavior b, int avg)
+        public static double generateNumber(Random r, double sigma)
         {
-            Random r = new Random();
-            this.Price = 0;
+            var u1 = r.NextDouble();
+            var u2 = r.NextDouble();
 
-            switch (b)
-            {
-                case Behavior.BelowAverage:
-                    {
-                        this.Price = r.Next((int)Math.Round(avg * BELOW_AVERAGE_MIN), (int)Math.Round(avg * BELOW_AVERAGE_MAX));
+            var rand_std_normal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                                Math.Sin(2.0 * Math.PI * u2);
 
-                        break;
-                    }
-                case Behavior.Average:
-                    {
-                        this.Price = r.Next((int)Math.Round(avg * AVERAGE_MIN), (int)Math.Round(avg * AVERAGE_MAX));
+            var rand_normal = 1 + sigma * rand_std_normal;
 
-                        break;
-                    }
-                case Behavior.AboveAverage:
-                    {
-                        this.Price = r.Next((int)Math.Round(avg * ABOVE_AVERAGE_MIN), (int)Math.Round(avg * ABOVE_AVERAGE_MAX));
-
-                        break;
-                    }
-            }
+            return rand_normal;
         }
 
         private async Task<int> ChooseAuction()
