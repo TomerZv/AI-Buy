@@ -120,6 +120,7 @@ namespace AuctionManager.Classes
 
         public void ReadAuctions()
         {
+            DateTime now = DateTime.Now;
             Auctions.Clear();
 
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create("http://localhost:8670/Content/AITrainingDataSmall.csv");
@@ -137,7 +138,7 @@ namespace AuctionManager.Classes
                     Auction auc = new Auction();
                     auc.Id = int.Parse(values[0]);
                     auc.ItemType = values[1];
-                    auc.StartDate = DateTime.Now;
+                    auc.StartDate = now;
                     auc.Duration = int.Parse(values[3]);
                     auc.EndDate = auc.StartDate.AddMinutes(auc.Duration);
                     auc.MinimumPrice = int.Parse(values[4]);

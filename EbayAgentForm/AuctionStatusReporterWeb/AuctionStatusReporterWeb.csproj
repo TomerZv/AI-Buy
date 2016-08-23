@@ -893,6 +893,9 @@
     <TypeScriptCompile Include="app\common\services\auctionResourceMock.ts" />
     <TypeScriptCompile Include="app\common\services\common.services.ts" />
     <TypeScriptCompile Include="app\common\services\dataAccessService.ts" />
+    <TypeScriptCompile Include="typings\angularjs\angular-mocks.d.ts" />
+    <TypeScriptCompile Include="typings\angularjs\angular-resource.d.ts" />
+    <TypeScriptCompile Include="typings\angularjs\angular-route.d.ts" />
     <TypeScriptCompile Include="typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="typings\tsd.d.ts" />

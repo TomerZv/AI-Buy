@@ -50,77 +50,67 @@ namespace Models
 
         public async Task ParticipateAuction()
         {
-            RelevantAuctions = new List<Auction>(AuctionToParticipate);
-            
-            int i = 0;
-            Auction currentAuction;
+            List<int> leadingAuctions = new List<int>();
+            List<Auction> allAuctions = await this.GetAuctions(Client);
+            List<Auction> relevantAuctions = allAuctions.Where(a => a.Status != AuctionStatus.Close).ToList();
 
-            while (!IsWinAuction && RelevantAuctions.Count > 0)
+            // Runs through only if didn't win any auction yet and there are still open auctions that the agent is able to participate in.
+            while (!IsWinAuction && relevantAuctions.Count != 0) 
             {
-                i = i % RelevantAuctions.Count;
-                currentAuction = RelevantAuctions.ElementAt(i);
+                relevantAuctions = relevantAuctions.OrderBy(x => x.EndDate).ToList();
+                relevantAuctions = relevantAuctions.Where(a => a.EndDate == relevantAuctions.First().EndDate).ToList();
+                relevantAuctions = relevantAuctions.OrderBy(a => a.CurrentPrice).ToList();
 
-                HttpResponseMessage response = await Client.GetAsync("GetAuction?id=" + currentAuction.Id);
+                // Gets the auction that has the lowest bid and ends ASAP.
+                var auctionToParticipate = relevantAuctions.First();
 
-                if (!response.IsSuccessStatusCode)
+                bool isLead = false;
+
+                List<int> auctionsToRemove = new List<int>();
+
+                // Validates on which auction this agent is still on the lead
+                foreach (var curr in leadingAuctions)
                 {
-                    FailedCount++;
-                }
-                else
-                {
-                    currentAuction = await response.Content.ReadAsAsync<Auction>();
+                    var currentLeadingAgent = allAuctions.Where(a => a.Id == curr).First().CurrentBid.Username;
 
-                    if (currentAuction.Status != AuctionStatus.Open)
+                    if (currentLeadingAgent == this.Name)
                     {
-                        if (currentAuction.Status == AuctionStatus.Close)
-                        {
-                            RelevantAuctions.Remove(RelevantAuctions.First(auc => auc.Id == currentAuction.Id));
-                        }
-                        else
-                        {
-                            i++;
-                        }
-
-                        continue;
+                        isLead = true;
                     }
-                    else
+                    else {
+                        auctionsToRemove.Add(curr);
+                    }
+                }
+
+                auctionsToRemove.ForEach(a => leadingAuctions.Remove(a));
+
+                // Only if the agent isn't on the lead of any auction, participates in the lowest bid auction.
+                if (!isLead) {
+                    // Checks that the agent is willing to pay for this auction.
+                    if ((auctionToParticipate.CurrentPrice + auctionToParticipate.MinBid < Price) && (auctionToParticipate.Status == AuctionStatus.Open))
                     {
-                        // בדיקה שההצעה האחרונה היא לא של הסוכן הנוכחי
-                        if (currentAuction.CurrentBid == null || currentAuction.CurrentBid.Username != Name)
+                        string postBody = string.Format(@"{{""AuctionID"":{0},""Price"":{1},""Username"":""{2}"",""Date"":""{3}""}}",
+                                                        auctionToParticipate.Id,
+                                                        auctionToParticipate.CurrentPrice + auctionToParticipate.MinBid,
+                                                        Name,
+                                                        DateTime.Now);
+
+                        HttpResponseMessage postresponse = await Client.PostAsync("PlaceBidOnAuction", new StringContent(postBody, Encoding.UTF8, "application/json"));
+
+                        if (!postresponse.IsSuccessStatusCode)
                         {
-                            // בדיקה שהסכום שהסוכן מוכן לתת גבוה מהמחיר המינמלי להצעה הבאה
-                            if ((currentAuction.CurrentPrice + currentAuction.MinBid < Price) && (currentAuction.Status != AuctionStatus.Close))
-                            {
-                                string postBody = string.Format(@"{{""AuctionID"":{0},""Price"":{1},""Username"":""{2}"",""Date"":""{3}""}}",
-                                                                currentAuction.Id,
-                                                                currentAuction.CurrentPrice + currentAuction.MinBid,
-                                                                Name,
-                                                                DateTime.Now);
-
-                                HttpResponseMessage postresponse = await Client.PostAsync("PlaceBidOnAuction", new StringContent(postBody, Encoding.UTF8, "application/json"));
-
-                                if (!postresponse.IsSuccessStatusCode)
-                                {
-                                    FailedCount++;
-                                }
-
-                                i++;
-                            }
-                            // נפסיק להציע במידה וסכום המכירה גבוה מהסכום שאנו מוכנים לשלם
-                            else
-                            {
-                                RelevantAuctions.Remove(RelevantAuctions.First(auc => auc.Id == currentAuction.Id));
-                            }
+                            FailedCount++;
                         }
-                        else
+                        else 
                         {
-                            i++;
+                            // Participated in the auction - adds it to the list of leadingAuctions.
+                            leadingAuctions.Add(auctionToParticipate.Id);
                         }
                     }
                 }
 
-                CheckWinAuctions();
-                Thread.Sleep(1000);
+                allAuctions = await this.GetAuctions(Client);
+                relevantAuctions = allAuctions.Where(a => a.Status != AuctionStatus.Close).ToList();
             }
         }
 
@@ -148,6 +138,7 @@ namespace Models
             var task = Task.Factory.StartNew(() => client.GetAsync("GetAuctions"));
             await task.Result;
             var temp = await task.Result.Result.Content.ReadAsAsync<List<Auction>>();
+
             return temp;
         }
     }
