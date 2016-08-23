@@ -116,7 +116,7 @@ namespace Models
 
                 //ChooseBehavior();
 
-                ChoosePrice(this.Auction.AvgPrice, 0.35);
+                ChoosePrice(this.Auction.AvgPrice, 0.25);
 
                 this.FailedInit = false;
             }
