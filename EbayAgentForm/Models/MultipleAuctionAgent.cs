@@ -26,7 +26,7 @@ namespace Models
 
         public int AuctionsFinishedCount { get; set; }
 
-        public List<Auction> AuctionToParticipate {get; set;}
+        public List<Auction> AuctionToParticipate { get; set; }
 
         public List<Auction> RelevantAuctions { get; set; }
 
@@ -55,7 +55,7 @@ namespace Models
             List<Auction> relevantAuctions = allAuctions.Where(a => a.Status != AuctionStatus.Close).ToList();
 
             // Runs through only if didn't win any auction yet and there are still open auctions that the agent is able to participate in.
-            while (!IsWinAuction && relevantAuctions.Count != 0) 
+            while (!IsWinAuction && relevantAuctions.Count != 0)
             {
                 relevantAuctions = relevantAuctions.OrderBy(x => x.EndDate).ToList();
                 relevantAuctions = relevantAuctions.Where(a => a.EndDate == relevantAuctions.First().EndDate).ToList();
@@ -77,7 +77,8 @@ namespace Models
                     {
                         isLead = true;
                     }
-                    else {
+                    else
+                    {
                         auctionsToRemove.Add(curr);
                     }
                 }
@@ -85,7 +86,8 @@ namespace Models
                 auctionsToRemove.ForEach(a => leadingAuctions.Remove(a));
 
                 // Only if the agent isn't on the lead of any auction, participates in the lowest bid auction.
-                if (!isLead) {
+                if (!isLead)
+                {
                     // Checks that the agent is willing to pay for this auction.
                     if ((auctionToParticipate.CurrentPrice + auctionToParticipate.MinBid < Price) && (auctionToParticipate.Status == AuctionStatus.Open))
                     {
@@ -101,7 +103,7 @@ namespace Models
                         {
                             FailedCount++;
                         }
-                        else 
+                        else
                         {
                             // Participated in the auction - adds it to the list of leadingAuctions.
                             leadingAuctions.Add(auctionToParticipate.Id);
@@ -109,7 +111,15 @@ namespace Models
                     }
                 }
 
-                allAuctions = await this.GetAuctions(Client);
+                try
+                {
+                    var temp = await this.GetAuctions(Client);
+                    allAuctions = temp;
+                }
+                catch (Exception)
+                {
+                    FailedCount++;
+                }
                 relevantAuctions = allAuctions.Where(a => a.Status != AuctionStatus.Close).ToList();
             }
         }
@@ -135,11 +145,13 @@ namespace Models
 
         private async Task<List<Auction>> GetAuctions(HttpClient client)
         {
+
             var task = Task.Factory.StartNew(() => client.GetAsync("GetAuctions"));
             await task.Result;
             var temp = await task.Result.Result.Content.ReadAsAsync<List<Auction>>();
 
             return temp;
+
         }
     }
 }

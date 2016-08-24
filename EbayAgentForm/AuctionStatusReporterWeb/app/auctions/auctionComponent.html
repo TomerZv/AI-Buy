@@ -1,5 +1,5 @@
 ﻿<div class="panel panel-default">
-    <div ng-click="vm.displayDetails()" class="panel-heading"><strong>Auction {{vm.auction.Id}}</strong> - {{vm.auction.getCurrentBid().Price}}$ by {{vm.auction.getCurrentBid().Username}}</div>
+    <div ng-click="vm.displayDetails()" class="panel-heading" ng-class="{multiagent : vm.isMultiAgentWinning()}"><strong>Auction {{vm.auction.Id}}</strong> - {{vm.auction.getCurrentBid().Price}}$ by {{vm.auction.getCurrentBid().Username}}</div>
     <div ng-if="vm.areDetailsDisplayed" class="panel-body">
         Product is {{vm.auction.ItemType}} <br />
         Auction started at {{vm.auction.StartDate | date:'dd/MM/yyyy HH:mm:ss'}} and ends at {{vm.auction.EndDate | date:'dd/MM/yyyy HH:mm:ss'}}<br />

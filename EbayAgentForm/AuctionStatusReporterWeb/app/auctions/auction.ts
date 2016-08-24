@@ -18,6 +18,7 @@
         getStatus(): AuctionStatus;
         getCurrentBid(): app.businessObjects.IBid;
         getCurrentPrice(): number;
+        isMultiAgentWinning(): boolean;
     }
 
     export class Auction implements IAuction {
@@ -50,6 +51,12 @@
 
         getCurrentPrice(): number {
             return this.getCurrentBid().Price;
+        }
+
+        isMultiAgentWinning(): boolean {
+            var bid = this.getCurrentBid();
+
+            return ((bid != null) && (bid.Username.indexOf("Multi") != -1));
         }
 
         deserialize(input): IAuction {

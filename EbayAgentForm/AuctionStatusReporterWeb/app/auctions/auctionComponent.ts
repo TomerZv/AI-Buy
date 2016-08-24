@@ -6,6 +6,7 @@
 
         displayDetails(): void;
         didAuctionEnd(): boolean;
+        isMultiAgentWinning(): boolean;
         durationToEnd(): number;
         chooseColor(username: string): Object;
     }
@@ -48,6 +49,10 @@
 
         durationToEnd(): number {
             return (this.auction.EndDate.getTime() - Date.now()) / 1000 / 60;
+        }
+
+        isMultiAgentWinning(): boolean {
+            return this.auction.isMultiAgentWinning();
         }
 
         chooseColor(username: string): Object {

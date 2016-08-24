@@ -28,6 +28,10 @@ var app;
             Auction.prototype.getCurrentPrice = function () {
                 return this.getCurrentBid().Price;
             };
+            Auction.prototype.isMultiAgentWinning = function () {
+                var bid = this.getCurrentBid();
+                return ((bid != null) && (bid.Username.indexOf("Multi") != -1));
+            };
             Auction.prototype.deserialize = function (input) {
                 var _this = this;
                 this.Id = input.Id;

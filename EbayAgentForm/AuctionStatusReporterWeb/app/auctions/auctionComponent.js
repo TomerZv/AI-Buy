@@ -26,6 +26,9 @@ var app;
             AuctionComponentCtrl.prototype.durationToEnd = function () {
                 return (this.auction.EndDate.getTime() - Date.now()) / 1000 / 60;
             };
+            AuctionComponentCtrl.prototype.isMultiAgentWinning = function () {
+                return this.auction.isMultiAgentWinning();
+            };
             AuctionComponentCtrl.prototype.chooseColor = function (username) {
                 var index;
                 if (this.didHandleBidder(username)) {

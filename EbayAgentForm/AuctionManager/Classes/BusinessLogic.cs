@@ -36,7 +36,8 @@ namespace AuctionManager.Classes
 
         #region Data Members
 
-        private static Dictionary<int, Tuple<Auction, Object>> Auctions { get; set; }
+        private static Dictionary<int, Auction> Auctions { get; set; }
+        private static Dictionary<int, Object> Lockers { get; set; }
         private static Dictionary<int, List<string>> AuctionsToAgents { get; set; }
         private static List<string> AllAgents { get; set; }
 
@@ -50,7 +51,8 @@ namespace AuctionManager.Classes
 
         private BusinessLogic()
         {
-            Auctions = new Dictionary<int, Tuple<Auction, object>>();
+            Auctions = new Dictionary<int, Auction>();
+            Lockers = new Dictionary<int, Object>();
             AuctionsToAgents = new Dictionary<int, List<string>>();
             AllAgents = new List<string>();
 
@@ -69,9 +71,9 @@ namespace AuctionManager.Classes
 
         public bool PrintResults()
         {
-            File.AppendAllText(@"c:\log\final.txt","Auc ID, Agent, Price" + Environment.NewLine);
+            File.AppendAllText(@"c:\log\final.txt", "Auc ID, Agent, Price" + Environment.NewLine);
 
-            
+
 
             int totalAuction = this.GetAllAuction().Count;
             double sumAllPrices = 0;
@@ -111,7 +113,7 @@ namespace AuctionManager.Classes
                     userName = auc.CurrentBid.Username;
                     price = auc.CurrentBid.Price.ToString();
                 }
-                
+
                 File.AppendAllText(@"c:\log\final.txt", string.Format("{0},{1},{2},{3}", auc.Id, userName, price, Environment.NewLine));
             }
 
@@ -146,7 +148,8 @@ namespace AuctionManager.Classes
                     auc.MinBid = int.Parse(values[6]);
                     auc.Biddings = new List<Bid>();
 
-                    Auctions.Add(auc.Id, new Tuple<Auction, object>(auc, new Object()));       
+                    Auctions.Add(auc.Id, auc);
+                    Lockers.Add(auc.Id, new Object());
                 }
             }
         }
@@ -154,12 +157,14 @@ namespace AuctionManager.Classes
         public List<Auction> GetAllAuction()
         {
             List<Auction> allAuctions = new List<Auction>();
+            List<int> keys = Auctions.Keys.ToList();
 
-            foreach(Tuple<Auction, Object> item in Auctions.Values)
+
+            foreach (int key in keys)
             {
-
-                allAuctions.Add(item.Item1);
+                allAuctions.Add(Auctions[key]);
             }
+
 
             return allAuctions;
         }
@@ -171,7 +176,7 @@ namespace AuctionManager.Classes
 
         public Auction GetAuction(int id)
         {
-            return Auctions[id].Item1;
+            return Auctions[id];
         }
 
         public BidResult PlaceBidOnAuction(Bid bid)
@@ -183,14 +188,14 @@ namespace AuctionManager.Classes
                 result.DidSucceed = false;
                 return result;
             }
-            Object locker = Auctions[bid.AuctionID].Item2;
+            Object locker = Lockers[bid.AuctionID];
 
             bool didEnter = Monitor.TryEnter(locker);
             Auction auction;
 
             if (didEnter)
             {
-                auction = Auctions[bid.AuctionID].Item1;
+                auction = Auctions[bid.AuctionID];
 
                 // Place bid only if the bid is higher than the current price of the auction and its still open
                 if (auction.CurrentPrice >= bid.Price || auction.Status != AuctionStatus.Open)
@@ -204,7 +209,7 @@ namespace AuctionManager.Classes
 
                     lock (FileLocker)
                     {
-                        File.AppendAllText(@"c:\log\log"+fileCounter+".txt", string.Format("User {0}, pays {1}, for auction id {2}, at {3}" + Environment.NewLine, bid.Username, bid.Price, bid.AuctionID, bid.Date));
+                        File.AppendAllText(@"c:\log\log" + fileCounter + ".txt", string.Format("User {0}, pays {1}, for auction id {2}, at {3}" + Environment.NewLine, bid.Username, bid.Price, bid.AuctionID, bid.Date));
                     }
                 }
 
@@ -213,7 +218,7 @@ namespace AuctionManager.Classes
             else
             {
                 //Monitor.Wait(locker);
-                auction = Auctions[bid.AuctionID].Item1;
+                auction = Auctions[bid.AuctionID];
             }
 
             result.DidSucceed = didEnter;
@@ -224,7 +229,7 @@ namespace AuctionManager.Classes
         {
             int selectedAuctionId;
 
-            lock(AuctionsToAgents)
+            lock (AuctionsToAgents)
             {
                 List<int> emptyAuctions = Auctions.Keys.Where(auctionId => !AuctionsToAgents.Keys.Contains(auctionId)).ToList();
 
@@ -247,7 +252,7 @@ namespace AuctionManager.Classes
             }
 
             if (!AllAgents.Contains(agentName))
-            { 
+            {
                 AllAgents.Add(agentName);
             }
 
